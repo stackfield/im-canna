@@ -1,6 +1,6 @@
 Summary: GTK+2 immodule for Canna
 Name: im-canna
-Version: 0.3.2.2
+Version: 0.3.2.3
 Release: 1
 License: LGPL
 Group: Applications/Editors

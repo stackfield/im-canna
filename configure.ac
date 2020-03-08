@@ -3,7 +3,7 @@ AC_PREREQ(2.52)
 AC_INIT(imcanna.c)
 
 PACKAGE=im-canna
-VERSION=0.3.2.2
+VERSION=0.3.2.3
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
