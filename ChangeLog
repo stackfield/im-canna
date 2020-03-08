@@ -1,8 +1,14 @@
 2020-03-06  Stackfield      <stackfield0trpg@gmail.com>
+	* missing: update
+	* imcanna.c: Change a style to show cardwin under cursor position.
+	* configure.ac: Release 0.3.3
+
+2020-03-06  Stackfield      <stackfield0trpg@gmail.com>
 	* rebuild and adjust autotool files.
 	* imcanna.c: add "ja" in im_canna_info.
 
 	* Release 
+
 2004-08-04  Yukihiro Nakai  <ynakai@redhat.com>
 
 	* imcanna.c: Still fix for kakutei-if-end-of=bunsetsu.

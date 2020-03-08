@@ -48,7 +48,7 @@
 #include "furigana.h"
 #include "imsss.h"
 
-/* [ あ�] */
+/* [ あ ] */
 #define CANNA_MODESTR_NORMAL "\x5b\x20\xa4\xa2\x20\x5d"
 /* [拡張] */
 #define CANNA_MODESTR_EXTENDED "\x5b\xb3\xc8\xc4\xa5\x5d"
@@ -120,6 +120,8 @@ typedef struct _IMContextCanna {
   GtkWidget* modelabel;
 
   gint canna_context; /* Cast from pointer - FIXME */
+  gint candwin_pos_x, candwin_pos_y;
+
 } IMContextCanna;
 
 typedef struct _IMContextCannaClass {
@@ -151,6 +153,8 @@ static void im_canna_update_candwin(IMContextCanna* cn);
 static void im_canna_set_client_window(GtkIMContext* context, GdkWindow *win);
 static gboolean im_canna_is_modechangekey(GtkIMContext *context, GdkEventKey *key);
 static void im_canna_update_modewin(IMContextCanna* cn);
+static void im_canna_set_cursor_location (GtkIMContext *context,
+					  GdkRectangle *area);
 static void im_canna_move_window(IMContextCanna* cn, GtkWidget* widget);
 
 static GSList* im_canna_get_furigana(IMContextCanna* cn);
@@ -286,6 +290,7 @@ im_canna_class_init (GtkIMContextClass *class)
   im_context_class->focus_in = im_canna_focus_in;
   im_context_class->focus_out = im_canna_focus_out;
   im_context_class->reset = im_canna_reset;
+  im_context_class->set_cursor_location = im_canna_set_cursor_location;
 
   object_class->finalize = im_canna_finalize;
 }
@@ -319,6 +324,8 @@ im_canna_init (GtkIMContext *im_context)
   gtk_container_add(GTK_CONTAINER(cn->modewin), cn->modelabel);
 
   snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)snooper_func, NULL);
+
+  cn->candwin_pos_x = cn->candwin_pos_y = 0;
 
   im_canna_force_to_kana_mode(cn);
 
@@ -434,6 +441,7 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
   /*** Japanese mode ***/
   /* Function mode */
   if( cn->function_mode ) {
+    gtk_widget_hide_all(GTK_WIDGET(cn->modewin));
     canna_code = get_canna_keysym(key->keyval, key->state);
 
     if( canna_code != 0 ) {
@@ -586,6 +594,7 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
    *  code, so it might not need to be removed at that time.
    */
   if( key->keyval == GDK_Tab ) {
+    /*
     gchar* utf8 = NULL;
     memset(cn->workbuf, 0, BUFSIZ);
     strncpy(cn->workbuf, cn->ks.echoStr, cn->kslength);
@@ -595,8 +604,10 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
     memset(cn->workbuf, 0, BUFSIZ);
     memset(cn->kakutei_buf, 0, BUFSIZ);
     g_signal_emit_by_name(cn, "preedit_changed");
+    */
+    im_canna_reset(context);
     im_canna_update_candwin(cn);
-    g_free(utf8);
+    /*    g_free(utf8); */
     return FALSE;
   }
 
@@ -823,7 +834,6 @@ im_canna_show_candwin(IMContextCanna* cn, gchar* candstr) {
   im_canna_move_window(cn, cn->candwin);
 
   gtk_label_set_text(GTK_LABEL(cn->candlabel), labeltext);
-
   attr = pango_attr_background_new(0, 0, 0);
   attr->start_index = eucpos2utf8pos(candstr, cn->ks.gline.revPos);
   attr->end_index = eucpos2utf8pos(candstr, cn->ks.gline.revPos + cn->ks.gline.revLen);
@@ -1684,16 +1694,40 @@ im_canna_focus_out (GtkIMContext* context) {
 
   focused_context = NULL;
 
-  if( cn->kslength ) {
-    gchar* eucstr = g_strndup(cn->ks.echoStr, cn->kslength);
-    gchar* utf8 = euc2utf8(eucstr);
-    g_signal_emit_by_name(cn, "commit", utf8);
-    g_free(utf8);
-    im_canna_force_to_kana_mode(cn);
-    g_signal_emit_by_name(cn, "preedit_changed");
-  }
+  im_canna_reset (context);
+
+/*   if( cn->kslength >= 1) { */
+/*     gchar* eucstr = g_strndup(cn->ks.echoStr, cn->kslength); */
+/*     gchar* utf8 = euc2utf8(eucstr); */
+/*     g_signal_emit_by_name(cn, "commit", utf8); */
+/*     g_free(utf8); */
+/*     im_canna_force_to_kana_mode(cn); */
+/*     g_signal_emit_by_name(cn, "preedit_changed"); */
+/*   } */
 
   gtk_widget_hide_all(GTK_WIDGET(cn->modewin));
+}
+
+static void
+im_canna_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
+{
+  IMContextCanna *cn = IM_CONTEXT_CANNA(context);
+  gint x, y, width, height, depth;
+  gint candwin_width, candwin_height;
+  GdkRectangle rect;
+
+  gdk_window_get_geometry(cn->client_window, &x, &y, &width, &height, &depth);
+  gdk_window_get_origin(cn->client_window, &x, &y);
+
+  gtk_window_get_size(GTK_WINDOW(cn->candwin),
+		      &candwin_width, &candwin_height);
+
+  cn->candwin_pos_x = x + area->x;
+  cn->candwin_pos_y = y + area->y + area->height;
+
+  gtk_window_move(GTK_WINDOW(cn->candwin),
+		  cn->candwin_pos_x,
+		  cn->candwin_pos_y);
 }
 
 static void
@@ -1719,6 +1753,11 @@ im_canna_move_window(IMContextCanna* cn, GtkWidget* widget) {
       break;
     else
       toplevel_gdk = parent;
+  }
+
+  if (widget == cn->candwin) {
+    gtk_window_move (GTK_WINDOW (widget), cn->candwin_pos_x, cn->candwin_pos_y);
+    return;
   }
 
   /* GdkWindow's user data is traditionally GtkWidget pointer owns it.
@@ -1758,7 +1797,7 @@ im_canna_update_modewin(IMContextCanna* cn) {
      important info for user input.
    */
   if( GTK_WIDGET_VISIBLE(cn->candwin) ) {
-    gtk_widget_hide_all(cn->modewin);
+    /* gtk_widget_hide_all(cn->modewin); */
     return;
   }
 
@@ -1814,9 +1853,9 @@ im_canna_update_candwin(IMContextCanna* cn) {
     im_canna_update_modewin(cn);
   }
   if ( cn->ks.info & KanjiGLineInfo ) {
-//    printf("GLineInfo ks.mode: %s\n", cn->ks.mode);
-//    printf("GLineInfo ks.gline.line: %s\n", cn->ks.gline.line);
-//    printf("GLineInfo ks.gline.length: %d\n", cn->ks.gline.length);
+/*     printf("GLineInfo ks.mode: %s\n", cn->ks.mode); */
+/*     printf("GLineInfo ks.gline.line: %s\n", cn->ks.gline.line); */
+/*     printf("GLineInfo ks.gline.length: %d\n", cn->ks.gline.length); */
 
     if( cn->ks.gline.length == 0 ) {
       im_canna_hide_candwin(cn);
@@ -1863,7 +1902,7 @@ static void
 im_canna_reset(GtkIMContext* context) {
   IMContextCanna* cn = (IMContextCanna*)context;
 
-  if( cn->kslength ) {
+  if( cn->kslength >= 0) {
     gchar* utf8 = NULL;
     memset(cn->workbuf, 0, BUFSIZ);
     strncpy(cn->workbuf, cn->ks.echoStr, cn->kslength);
@@ -1871,7 +1910,7 @@ im_canna_reset(GtkIMContext* context) {
     g_signal_emit_by_name(cn, "commit", utf8);
     cn->kslength = 0;
     g_free(utf8);
-  }
+  } 
 
   memset(cn->workbuf, 0, BUFSIZ);
   memset(cn->kakutei_buf, 0, BUFSIZ);
