@@ -1,0 +1,4 @@
+A simple text view widget for im-canna test.
+Gedit or Gnumeric is not good for test because of GTK+2 mnemonic bug.
+(http://bugzilla.gnome.org/show_bug.cgi?id=90082)
+(http://bugzilla.gnome.org/show_bug.cgi?id=111438)

@@ -1,0 +1,195 @@
+2004-08-04  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Still fix for kakutei-if-end-of=bunsetsu.
+	* configure.in: Release 0.3.2.2
+
+2004-08-04  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Disable furigana support for when
+	  (setq kakutei-if-end-of-bunsetsu t) in ~/.canna
+	* configure.in: Release 0.3.2.1
+
+2004-08-03  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* Release 0.3.2
+
+2004-07-28  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Focus out to commit and force to init.
+
+2004-07-27  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Support Muhenkan key.
+	* imcanna.c: Wheel mouse support.
+	* configure.in: Up to 0.3.2
+
+2004-07-27  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* Release 0.3.1
+
+2004-07-26  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add translation.
+	* Makefile.am,configure.in,autogen.sh: Add translation.
+
+2004-07-22  Yukihiro Nakai  <ynakai@rethat.com>
+
+	* imcanna.c: Add some keybindings 
+
+2004-07-21  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Don't get some of editor's key bindings.
+
+2004-06-20  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Support Egg style mode change
+
+2004-06-14  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Fix the bug and crash problem in ideograph mode
+
+2004-06-13  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add finalize codes.
+
+2004-06-08  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Complete snooper
+	* Release 0.3.0 as the initial snooper release.
+
+2004-06-06  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Commit space when no preedit string
+	* imcanna.c: Use snooper function
+	* configure.in: Bump up to 0.3.0
+
+2004-06-05  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Unify all keytable.
+	* Release 0.2.2
+
+2004-06-02  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add all unsed key to ignore.
+	* imcanna.c: Tab to focus next editable widget.
+
+2004-05-31  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* Update Copyright issue
+	* imcanna.c: Add key conversion table
+	* imcanna.c: Regist new word correctly.
+
+2004-05-28  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* Makefile.am: Add special install target for maintainance.
+	* texts/textview.c: Press ESC to quit
+	* imcanna.c: Add GDK_Home and GDK_End code
+
+2004-05-20  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Use GDK_Kanji
+
+2004-03-10  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Kill debug messages.
+	* configure.in: Bump up to 0.2.2
+	* imcanna.spec.in: Update
+
+2003-11-19  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Revert code and now through control masked inputs.
+		     Because previous fix broke normal input.
+
+2003-11-18  Yukihiro Nakai  <ynakai@redhat.com> 
+
+	* imcanna.c: Just return FALSE when Japanese input mode is off.
+		     This is a fix for gnome-terminal.
+
+2003-10-29  Yukihiro Nakai  <ynakai@redhat.com> 
+
+	* imcanna.c: Use GDK_Mode_switch instead of GDK_kana_switch
+		     as xev says.
+
+2003-10-28  Yukihiro Nakai  <ynakai@redhat.com> 
+
+	* imcanna.c: GDK_Down to behave as C-n
+	* imcanna.c: GDK_Up to behave as C-p
+	* imcanna.c: Shift+Right/Left behaves like kinput2
+	* imcanna.c: Shift+Henkan behaves as C-p
+	* imcanna.c: GDK_Right is C-f
+	* imcanna.c: GDK_Left is C-b
+	* imcanna.c: GDK_kana_switch is C-p
+
+2003-10-27  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Discard furigana for hiragana.
+
+2003-10-24  Yukihiro Nakai  <ynakai@redaht.com>
+
+	* imcanna.c: Reassign GDK_Henkan to C-n.
+	* imcanna.c: Keyword change; immodule-needs-mnemonic
+
+2003-10-23  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* furigana.h: Reorder struct for consistency.
+	* imcanna.c: Experimental support for GDK_Hiragana_Katakana
+		     for Katakana input, because most apps assigns C-n
+		     already.
+
+2003-10-22  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* furigana.h: Add foffset element.
+	* imcanna.c: Code clean up - just cleared the obsolete codes.
+	* imcanna.c: Finish furigana feature.
+
+2003-10-19  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Fix crash bugs on test-eel-editable-label.
+	* imcanna.c: Add some work-around for #111438.
+
+2003-10-18  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add imsss code.
+	* imsss.[ch]: Added.
+
+2003-10-16  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Remove cn->preedit_buf and big change for it.
+	* imcanna.c: Add many function keys (C-*)
+	* imcanna.c: modewin: window focus sensitiveness
+
+2003-10-14  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add mode window.
+	* imcanna.c: Set window position at the outsite of the app correctly.
+	* imcanna.c: Fix number selection in candidate window.
+	* imcanna.c: Add furigana support code (experimental yet)
+	* furigana.h: Added.
+
+2003-09-06  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add Up and Down key behavior
+
+2003-09-02  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add mode change (ja_input_mode)
+	* textview/*: Add a simple textview code for test
+
+2002-10-13  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add candidate window
+
+2002-10-11  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* imcanna.c: Add reverse color code for candidate selection.
+	* imcanna.c: Add bunsetsu extend code.
+	* imcanna.c: Add bunsetsu move code.
+	* imcanna.c: Add backspace code.
+
+2002-10-07  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* configure.in: Add Canna detect lines
+
+2002-09-23  Yukihiro Nakai  <ynakai@redhat.com>
+
+	* Initial import
