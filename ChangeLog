@@ -3,6 +3,7 @@
 	             when click other of window.
 	* imcanna.c: fix crash when typing hiragana into textbox which is empty.
 	* configure.ac: Release 0.3.4
+	* configure.ac: Release 0.3.5
 
 2020-03-09  Stackfield      <stackfield0trpg@gmail.com>
 	* imcanna.c: fix to calculate candwin.
