@@ -733,9 +733,9 @@ im_canna_get_preedit_string(GtkIMContext *ic, gchar **str,
       if (c < 0x80)
 	eucpos += 1; // EUC G0 (ASCII) == GL
       else if (c == 0x8E)
-	eucpos += 2; // EUC G0 (Half Width Kana) == SS2
+	eucpos += 2; // EUC G2 (Half Width Kana) == SS2
       else if (c == 0x8F)
-	eucpos += 3; // EUC G0 (JIS 3-4 level Kanji) == SS3
+	eucpos += 3; // EUC G3 (JIS 3-4 level Kanji) == SS3
       else
 	eucpos += 2; // EUC G1 (JIS 1-2 level Kanji) == GR
 
