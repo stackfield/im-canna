@@ -1,6 +1,7 @@
 2020-03-09  Stackfield      <stackfield0trpg@gmail.com>
 	* imcanna.c: prevent to clear prefocused text
 	             when click other of window.
+	* imcanna.c: fix crash when typing hiragana into textbox which is empty.
 	* configure.ac: Release 0.3.4
 
 2020-03-09  Stackfield      <stackfield0trpg@gmail.com>

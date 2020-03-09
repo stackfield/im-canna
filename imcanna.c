@@ -724,7 +724,7 @@ im_canna_get_preedit_string(GtkIMContext *ic, gchar **str,
     pango_attr_list_insert(*attrs, attr);
   }
 
-  {
+  if (cursor_pos != NULL) {
     int charpos = 0 , eucpos = 0;
 
     while (cn->ks.revPos > eucpos) {
