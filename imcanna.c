@@ -48,7 +48,7 @@
 #include "furigana.h"
 #include "imsss.h"
 
-/* [ あ ] */
+/* [ あ�] */
 #define CANNA_MODESTR_NORMAL "\x5b\x20\xa4\xa2\x20\x5d"
 /* [拡張] */
 #define CANNA_MODESTR_EXTENDED "\x5b\xb3\xc8\xc4\xa5\x5d"
@@ -1935,7 +1935,7 @@ static void
 im_canna_reset(GtkIMContext* context) {
   IMContextCanna* cn = (IMContextCanna*)context;
 
-  if( cn->kslength >= 0) {
+  if( cn->kslength ) {
     gchar* utf8 = NULL;
     memset(cn->workbuf, 0, BUFSIZ);
     strncpy(cn->workbuf, cn->ks.echoStr, cn->kslength);
