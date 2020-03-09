@@ -1,4 +1,8 @@
 2020-03-06  Stackfield      <stackfield0trpg@gmail.com>
+	* imcanna.c: fix to calculate candwin.
+	* configure.ac: Release 0.3.3.1
+
+2020-03-06  Stackfield      <stackfield0trpg@gmail.com>
 	* missing: update
 	* imcanna.c: Change a style to show cardwin under cursor position.
 	* configure.ac: Release 0.3.3

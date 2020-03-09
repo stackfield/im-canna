@@ -122,6 +122,8 @@ typedef struct _IMContextCanna {
   gint canna_context; /* Cast from pointer - FIXME */
   gint candwin_pos_x, candwin_pos_y;
 
+  gint candwin_max_strlen;
+
 } IMContextCanna;
 
 typedef struct _IMContextCannaClass {
@@ -299,16 +301,19 @@ static void
 im_canna_init (GtkIMContext *im_context)
 {
   IMContextCanna *cn = IM_CONTEXT_CANNA(im_context);
-
   cn->canna_context = (int)cn;
   cn->cand_stat = 0;
   cn->kslength = 0;
   cn->workbuf = g_new0(guchar, BUFSIZ);
   cn->kakutei_buf = g_new0(guchar, BUFSIZ);
   cn->candwin = gtk_window_new(GTK_WINDOW_POPUP);
+  cn->candwin_max_strlen = 72;
 
   gtk_widget_add_events(cn->candwin, GDK_BUTTON_PRESS_MASK);
   g_signal_connect(cn->candwin, "scroll_event", G_CALLBACK(scroll_cb), cn);
+
+  jrKanjiControl(cn->canna_context, KC_INITIALIZE, 0);
+  jrKanjiControl(cn->canna_context, KC_SETWIDTH, cn->candwin_max_strlen);
 
   cn->candlabel = gtk_label_new("");
   gtk_container_add(GTK_CONTAINER(cn->candwin), cn->candlabel);
@@ -316,9 +321,7 @@ im_canna_init (GtkIMContext *im_context)
   cn->client_window = NULL;
   cn->focus_in_candwin_show = FALSE;
   cn->function_mode = FALSE;
-
-  jrKanjiControl(cn->canna_context, KC_INITIALIZE, 0);
-
+  
   cn->modewin = gtk_window_new(GTK_WINDOW_POPUP);
   cn->modelabel = gtk_label_new("");
   gtk_container_add(GTK_CONTAINER(cn->modewin), cn->modelabel);
@@ -721,8 +724,27 @@ im_canna_get_preedit_string(GtkIMContext *ic, gchar **str,
     pango_attr_list_insert(*attrs, attr);
   }
 
-  if( cursor_pos )
-    *cursor_pos = strlen(*str);
+  {
+    int charpos = 0 , eucpos = 0;
+
+    while (cn->ks.revPos > eucpos) {
+      unsigned char c = *(cn->ks.echoStr + eucpos);
+
+      if (c < 0x80)
+	eucpos += 1; // EUC G0 (ASCII) == GL
+      else if (c == 0x8E)
+	eucpos += 2; // EUC G0 (Half Width Kana) == SS2
+      else if (c == 0x8F)
+	eucpos += 3; // EUC G0 (JIS 3-4 level Kanji) == SS3
+      else
+	eucpos += 2; // EUC G1 (JIS 1-2 level Kanji) == GR
+
+      charpos++;
+    }
+
+    *cursor_pos = charpos;
+  }
+
 }
 
 static guchar *
@@ -1712,18 +1734,27 @@ static void
 im_canna_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
 {
   IMContextCanna *cn = IM_CONTEXT_CANNA(context);
-  gint x, y, width, height, depth;
-  gint candwin_width, candwin_height;
-  GdkRectangle rect;
+  GdkScreen* screen;
+  gint scr_width, scr_height;
+  gint x, y, candwin_width, candwin_height;
 
-  gdk_window_get_geometry(cn->client_window, &x, &y, &width, &height, &depth);
   gdk_window_get_origin(cn->client_window, &x, &y);
-
   gtk_window_get_size(GTK_WINDOW(cn->candwin),
 		      &candwin_width, &candwin_height);
 
-  cn->candwin_pos_x = x + area->x;
+  screen = gdk_drawable_get_screen (cn->client_window);
+  scr_width  = gdk_screen_get_width  (screen);
+  scr_height = gdk_screen_get_height (screen);
+
+  cn->candwin_pos_x = x + area->x - candwin_width / 2;
+  if (cn->candwin_pos_x < 0)
+    cn->candwin_pos_x = 0;
+  else if (cn->candwin_pos_x + candwin_width > scr_width)
+    cn->candwin_pos_x = scr_width - candwin_width;
+ 
   cn->candwin_pos_y = y + area->y + area->height;
+  if (cn->candwin_pos_y + candwin_height > scr_height)
+    cn->candwin_pos_y = scr_height - candwin_height;
 
   gtk_window_move(GTK_WINDOW(cn->candwin),
 		  cn->candwin_pos_x,
@@ -1756,7 +1787,9 @@ im_canna_move_window(IMContextCanna* cn, GtkWidget* widget) {
   }
 
   if (widget == cn->candwin) {
-    gtk_window_move (GTK_WINDOW (widget), cn->candwin_pos_x, cn->candwin_pos_y);
+    gtk_window_move (GTK_WINDOW (widget),
+		     cn->candwin_pos_x,
+		     cn->candwin_pos_y);
     return;
   }
 
