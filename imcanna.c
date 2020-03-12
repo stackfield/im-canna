@@ -121,9 +121,6 @@ typedef struct _IMContextCanna {
 
   gint canna_context; /* Cast from pointer - FIXME */
   gint candwin_pos_x, candwin_pos_y;
-
-  gint candwin_max_strlen;
-
 } IMContextCanna;
 
 typedef struct _IMContextCannaClass {
@@ -307,13 +304,11 @@ im_canna_init (GtkIMContext *im_context)
   cn->workbuf = g_new0(guchar, BUFSIZ);
   cn->kakutei_buf = g_new0(guchar, BUFSIZ);
   cn->candwin = gtk_window_new(GTK_WINDOW_POPUP);
-  cn->candwin_max_strlen = 72;
 
   gtk_widget_add_events(cn->candwin, GDK_BUTTON_PRESS_MASK);
   g_signal_connect(cn->candwin, "scroll_event", G_CALLBACK(scroll_cb), cn);
 
   jrKanjiControl(cn->canna_context, KC_INITIALIZE, 0);
-  jrKanjiControl(cn->canna_context, KC_SETWIDTH, cn->candwin_max_strlen);
 
   cn->candlabel = gtk_label_new("");
   gtk_container_add(GTK_CONTAINER(cn->candwin), cn->candlabel);
@@ -867,6 +862,8 @@ im_canna_show_candwin(IMContextCanna* cn, gchar* candstr) {
   pango_attr_list_insert(attrlist, attr);
 
   gtk_label_set_attributes(GTK_LABEL(cn->candlabel), attrlist);
+
+  gtk_window_resize (GTK_WINDOW(cn->candwin), 1, 1);
 
   gtk_widget_show_all(cn->candwin);
 
