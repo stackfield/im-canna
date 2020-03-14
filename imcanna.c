@@ -610,7 +610,7 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
   }
 
   /*
-   * if cursor-wrap is of in canna setting file, prevent preedit area to hide
+   * if cursor-wrap is off in canna setting file, prevent preedit area to hide
    * when left/right is pushed and Cursor has first/last.
    */
   if (!GTK_WIDGET_VISIBLE(cn->candwin)) {
