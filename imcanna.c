@@ -615,12 +615,16 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
    */
   if (!GTK_WIDGET_VISIBLE(cn->candwin)) {
     /* GDK_LEFT || Ctrl-B */
-    if( canna_code == 0x02 && cn->ks.revPos == 0)
+    if( canna_code == 0x02 && cn->ks.revPos == 0) {
+      g_signal_emit_by_name(cn, "preedit_changed");
       return TRUE;
+    }
     /* GDK_RIGHT || Ctrl-F */
     if(cn->ks.length == cn->ks.revPos + cn->ks.revLen)
-      if(canna_code == 0x06)
+      if(canna_code == 0x06) {
+	g_signal_emit_by_name(cn, "preedit_changed");
 	return TRUE;
+      }
   }
 
   if( canna_code != 0 ) {
