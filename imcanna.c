@@ -614,10 +614,10 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
    * when left/right is pushed and Cursor has first/last.
    */
   if (!GTK_WIDGET_VISIBLE(cn->candwin)) {
-    /* GDK_LEFT && Ctrl-B */
+    /* GDK_LEFT || Ctrl-B */
     if( canna_code == 0x02 && cn->ks.revPos == 0)
       return TRUE;
-    /* GDK_RIGHT && Ctrl-F */
+    /* GDK_RIGHT || Ctrl-F */
     if(cn->ks.length == cn->ks.revPos + cn->ks.revLen)
       if(canna_code == 0x06)
 	return TRUE;
