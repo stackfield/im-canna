@@ -614,17 +614,43 @@ im_canna_filter_keypress(GtkIMContext *context, GdkEventKey *key)
    * when left/right is pushed and Cursor has first/last.
    */
   if (!GTK_WIDGET_VISIBLE(cn->candwin)) {
-    /* GDK_LEFT || Ctrl-B */
-    if( canna_code == 0x02 && cn->ks.revPos == 0) {
+    /* one reversed word only */
+    if (cn->ks.revPos == 0 && cn->ks.revLen == cn->ks.length
+	&& cn->ks.revLen > 0 && (canna_code == 0x02 || canna_code == 0x06)) {
       g_signal_emit_by_name(cn, "preedit_changed");
       return TRUE;
     }
+
+#define CANNA_CURPOS_MOVE_TO_LEFT() (jrKanjiString(cn->canna_context, 0x02, cn->kakutei_buf, BUFSIZ, &cn->ks))
+#define CANNA_CURPOS_MOVE_TO_RIGHT() (jrKanjiString(cn->canna_context, 0x06, cn->kakutei_buf, BUFSIZ, &cn->ks))
+    /* GDK_LEFT || Ctrl-B */
+    if(canna_code == 0x02 && cn->ks.revPos == 0) {
+      /* It is too Hackish. (''; */
+      memset(cn->kakutei_buf, 0, BUFSIZ);
+      CANNA_CURPOS_MOVE_TO_LEFT();
+      if(cn->ks.revPos <= 0) {
+	CANNA_CURPOS_MOVE_TO_RIGHT();
+	CANNA_CURPOS_MOVE_TO_LEFT();
+      }
+      g_signal_emit_by_name(cn, "preedit_changed");
+      return TRUE;
+    }
+
     /* GDK_RIGHT || Ctrl-F */
     if(cn->ks.length == cn->ks.revPos + cn->ks.revLen)
       if(canna_code == 0x06) {
+	/* It is too Hackish. (''; 2nd */
+	memset(cn->kakutei_buf, 0, BUFSIZ);
+	CANNA_CURPOS_MOVE_TO_RIGHT();
+	if(cn->ks.length <= cn->ks.revPos + cn->ks.revLen) {
+	  CANNA_CURPOS_MOVE_TO_LEFT();
+	  CANNA_CURPOS_MOVE_TO_RIGHT();
+	}
 	g_signal_emit_by_name(cn, "preedit_changed");
 	return TRUE;
       }
+#undef CANNA_CURPOS_MOVE_TO_LEFT
+#undef CANNA_CURPOS_MOVE_TO_RIGHT
   }
 
   if( canna_code != 0 ) {
