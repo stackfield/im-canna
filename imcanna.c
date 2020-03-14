@@ -1711,6 +1711,8 @@ im_canna_focus_in (GtkIMContext* context) {
 
   focused_context = context;
 
+  im_canna_kill(cn);
+
   if( cn->focus_in_candwin_show == FALSE ) {
     im_canna_update_modewin(cn);
     return;
